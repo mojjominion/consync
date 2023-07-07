@@ -9,9 +9,8 @@ echo "[Unit]
 Description=${SERVICE_DESCRIPTION}
 
 [Service]
-Type=oneshot
-RemainAfterExit=yes
 ExecStart=${SERVICE_EXECUTABLE}
+Restart=on-failure
 RestartSec=3
 
 [Install]
