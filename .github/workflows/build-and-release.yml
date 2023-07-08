@@ -1,3 +1,4 @@
+# source : https://dzfrias.dev/blog/deploy-rust-cross-platform-github-actions
 name: Build And Release
 
 on:

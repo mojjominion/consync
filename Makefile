@@ -1,5 +1,5 @@
 install:
-	cargo build
+	cargo build --release
 	bash scripts/install.sh
 
 uninstall:
