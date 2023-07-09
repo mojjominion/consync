@@ -50,6 +50,12 @@ This script will do following three things:
 2. create `systemd` service to keep the tool running in the background
 3. and finally install `consync_uninstall` to uninstall the tool
 
+To check that sevice is running you can use this command 
+
+```sh
+ps -eo 'tty,pid,comm' | grep "consync"
+```
+
 For more information refer to the script [here](./scripts/install.sh)
 
 
