@@ -49,6 +49,45 @@ create_systemd_service() {
     echo "Done..."
 }
 
+create_launchd_service() {
+    echo "Creating launchd service..."
+
+    # Specify the user and service details
+    SERVICE_NAME=$BIN_NAME
+    SERVICE_EXECUTABLE="$HOME/bin/$SERVICE_NAME"
+    SERVICE_DESCRIPTION="dot_configs watcher"
+
+    # Create the service plist file
+    SERVICE_PLIST="~/Library/LaunchAgents/${SERVICE_NAME}.plist"
+    cat >"$SERVICE_PLIST" <<EOF
+    <?xml version="1.0" encoding="UTF-8"?>
+    <plist version="1.0">
+        <dict>
+            <key>Label</key>
+            <string>${SERVICE_NAME}</string>
+            <key>ProgramArguments</key>
+            <array>
+                <string>${SERVICE_EXECUTABLE}</string>
+            </array>
+            <key>RunAtLoad</key>
+            <true/>
+            <key>KeepAlive</key>
+            <true/>
+            <key>StandardOutPath</key>
+            <string>/tmp/${SERVICE_NAME}.out</string>
+            <key>StandardErrorPath</key>
+            <string>/tmp/${SERVICE_NAME}.err</string>
+        </dict>
+    </plist>
+EOF
+
+    # Load and start the service
+    launchctl load -w "$SERVICE_PLIST"
+    launchctl start "$SERVICE_NAME"
+
+    echo "Done..."
+}
+
 # Function to unpack the downloaded tar.gz file
 unpack() {
     FILE=$(echo *.tar.gz)
@@ -97,11 +136,13 @@ download_install() {
 # Function to download and install the binary
 download_and_install_binary() {
     # Determine the appropriate download command based on the operating system
-    download_command="download_install_linux"
+    create_service="create_systemd_service"
     if [[ "$(uname)" == "Linux" ]]; then
         pkg="linux"
+        create_service="create_systemd_service"
     elif [[ "$(uname)" == "Darwin" ]]; then
         pkg="apple"
+        create_service="create_launchd_service"
     else
         echo "Unsupported operating system"
         exit 1
@@ -109,12 +150,11 @@ download_and_install_binary() {
 
     # Download the binary
     download_install $pkg
-
     # Unpack and install the binary
     unpack
     create_uninstall_binary
     install_binary
-    create_systemd_service
+    $create_service
     clean
 }
 
