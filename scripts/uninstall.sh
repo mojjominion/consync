@@ -1,6 +1,11 @@
 #!/usr/bin/sh
-rm ~/bin/consync
-echo "'consync' removed from ~/bin/"
+
+BIN_NAME=consync
+
+echo "'${BIN_NAME}' removed from ~/bin/"
+
+rm ~/bin/$BIN_NAME
+rm ~/bin/${BIN_NAME}_uninstall
 
 systemctl --user disable consync.service
 systemctl --user stop consync.service
