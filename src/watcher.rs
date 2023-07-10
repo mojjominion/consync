@@ -18,7 +18,7 @@ fn async_watcher() -> Result<(RecommendedWatcher, Receiver<Result<Event>>)> {
     let watcher = RecommendedWatcher::new(
         move |res: Result<Event>| {
             let r = res.as_ref().unwrap();
-            if is_create_or_delete(r.kind) && is_file_interesting(&r.paths[0]) {
+            if is_create_or_delete(r.kind) && is_file_interesting(&r.paths[0], None) {
                 futures::executor::block_on(async {
                     tx.send(res).await.unwrap();
                 })

@@ -2,7 +2,7 @@ use std::{fs, path::PathBuf};
 
 use crate::filters::is_file_interesting;
 
-pub fn read_dir_recursive(path: PathBuf, result: &mut Vec<String>) {
+pub fn read_dir_recursive(path: PathBuf, result: &mut Vec<String>, ext: Option<&str>) {
     let Ok(entries) = fs::read_dir(path) else { return };
 
     for entry in entries {
@@ -12,7 +12,7 @@ pub fn read_dir_recursive(path: PathBuf, result: &mut Vec<String>) {
 
             match path.is_dir() {
                 false => {
-                    if !is_file_interesting(&path) {
+                    if !is_file_interesting(&path, ext) {
                         continue;
                     }
                     // Process the file
@@ -20,7 +20,7 @@ pub fn read_dir_recursive(path: PathBuf, result: &mut Vec<String>) {
                     result.push(file_name);
                 }
                 true => {
-                    read_dir_recursive(path, result);
+                    read_dir_recursive(path, result, ext);
                 }
             }
         }
