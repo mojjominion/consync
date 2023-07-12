@@ -1,22 +1,8 @@
 use serde::{Deserialize, Serialize};
+
 use std::fs::{File, OpenOptions};
 use std::io::{Read, Write};
 use std::path::Path;
-
-#[derive(Debug, Serialize, Deserialize)]
-pub struct FileType {
-    /// ie. yml, toml, service, conf etc
-    pub file_type: String,
-    /// This command will be executed for the file type set `file_type`
-    ///
-    ///
-    /// For Example:
-    /// `run: "cat"`
-    /// This cammand witl just print the content of the file having `file_type` extention
-    ///
-    /// **Note:** If this is set global `run` will be ignored for the file type
-    pub run: Option<String>,
-}
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct AppConfig {
@@ -30,6 +16,9 @@ pub struct AppConfig {
     /// This cammand witl just print the content of the file having `file_type` extention
     ///
     pub run: Option<String>,
+
+    /// Defaults::
+    /// "conf", "config", "confg", "yml", "yaml", "service"
     pub file_types: Option<Vec<String>>,
 }
 
@@ -71,7 +60,7 @@ pub fn load_config() -> Result<AppConfig, Box<dyn std::error::Error>> {
                 .collect();
             let new_config = AppConfig {
                 root,
-                run: Some("cat".to_string()),
+                run: None,
                 file_types: Some(types),
             };
             let res = write_config_file(config_path.as_path(), &new_config)?;

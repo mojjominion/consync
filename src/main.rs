@@ -1,11 +1,11 @@
 use std::error;
 
-use read_config::AppConfig;
+use config::AppConfig;
 
 pub mod callbacks;
 pub mod cli;
+pub mod config;
 pub mod filters;
-pub mod read_config;
 pub mod read_dir;
 pub mod watcher;
 
@@ -21,9 +21,9 @@ fn run(app_config: &AppConfig) {
 
 /// Async, futures channel based event watching
 fn main() -> Result<(), Box<dyn error::Error>> {
-    let app_config = read_config::load_config()?;
+    let app_config = config::load_config()?;
 
-    let args_provided = cli::check_cli_context(&app_config);
+    let args_provided = cli::check::cli_context(&app_config);
     if args_provided.is_some() {
         return Ok(());
     }

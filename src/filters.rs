@@ -2,7 +2,7 @@ use std::{collections::HashSet, path::PathBuf};
 
 use notify::EventKind;
 
-use crate::read_config::AppConfig;
+use crate::config::AppConfig;
 
 pub fn is_create_or_delete(kind: EventKind) -> bool {
     kind.is_create() | kind.is_remove() | kind.is_modify()

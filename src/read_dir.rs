@@ -1,6 +1,6 @@
 use std::{fs, path::PathBuf};
 
-use crate::{filters::is_file_interesting, read_config::AppConfig};
+use crate::{config::AppConfig, filters::is_file_interesting};
 
 pub fn read_dir_recursive(path: PathBuf, ext: Option<&str>, app_config: &AppConfig) -> Vec<String> {
     let mut result: Vec<String> = vec![];

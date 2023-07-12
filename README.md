@@ -59,6 +59,11 @@ ps -eo 'tty,pid,comm' | grep "consync"
 For more information refer to the script [here](./scripts/install.sh)
 
 
+### Cli
+
+- `consync find` find all the files matching default [extentions](./src/config.rs) in `~/.config/` dir.
+- `consync find <file_ext>` find all the files matching `file_ext` input ignoring all the default ones.
+
 
 ### Uninstalling
 

@@ -7,8 +7,8 @@ use std::path::Path;
 
 use crate::{
     callbacks::executor::Executor,
+    config::AppConfig,
     filters::{is_create_or_delete, is_file_interesting},
-    read_config::AppConfig,
 };
 
 fn async_watcher(app_config: &AppConfig) -> Result<(RecommendedWatcher, Receiver<Result<Event>>)> {

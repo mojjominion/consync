@@ -1,8 +1,8 @@
-use std::{io::Read, path::PathBuf, process::Command};
+use std::{path::PathBuf, process::Command};
 
 use notify::EventKind;
 
-use crate::read_config::AppConfig;
+use crate::config::AppConfig;
 
 use super::chezmoi;
 
