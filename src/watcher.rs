@@ -6,19 +6,24 @@ use notify::{Config, Event, RecommendedWatcher, RecursiveMode, Result, Watcher};
 use std::path::Path;
 
 use crate::{
-    callbacks::chezmoi::run_chezmoi,
+    callbacks::executor::Executor,
     filters::{is_create_or_delete, is_file_interesting},
+    read_config::AppConfig,
 };
 
-fn async_watcher() -> Result<(RecommendedWatcher, Receiver<Result<Event>>)> {
+fn async_watcher(app_config: &AppConfig) -> Result<(RecommendedWatcher, Receiver<Result<Event>>)> {
     let (mut tx, rx) = channel(1);
 
+    let config_cloned = app_config.clone();
     // Automatically select the best implementation for your platform.
     // You can also access each implementation directly e.g. INotifyWatcher.
     let watcher = RecommendedWatcher::new(
         move |res: Result<Event>| {
             let r = res.as_ref().unwrap();
-            if is_create_or_delete(r.kind) && is_file_interesting(&r.paths[0], None) {
+            let is_operation = is_create_or_delete(r.kind);
+            let is_file = is_file_interesting(&r.paths[0], None, &config_cloned);
+
+            if is_operation && is_file {
                 futures::executor::block_on(async {
                     tx.send(res).await.unwrap();
                 })
@@ -30,18 +35,24 @@ fn async_watcher() -> Result<(RecommendedWatcher, Receiver<Result<Event>>)> {
     Ok((watcher, rx))
 }
 
-pub async fn async_watch<P: AsRef<Path>>(path: P) -> Result<()> {
-    let (mut watcher, mut rx) = async_watcher()?;
+pub async fn async_watch(app_config: &AppConfig) -> Result<()> {
+    let (mut watcher, mut rx) = async_watcher(app_config)?;
 
     // Add a path to be watched. All files and directories at that path and
     // below will be monitored for changes.
-    watcher.watch(path.as_ref(), RecursiveMode::Recursive)?;
+    let path = Path::new(app_config.root.as_str());
+    watcher.watch(&path, RecursiveMode::Recursive)?;
 
     while let Some(res) = rx.next().await {
         match res {
             Ok(event) => {
                 if let Some(file_name) = event.paths.get(0) {
-                    run_chezmoi(file_name, event.kind);
+                    let executor = Executor {
+                        app_config: app_config.clone(),
+                        file_name: file_name.to_string_lossy().to_string(),
+                        kind: event.kind,
+                    };
+                    executor.run();
                 }
             }
             Err(e) => println!("watch error: {:?}", e),

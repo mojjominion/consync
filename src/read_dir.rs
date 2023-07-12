@@ -1,9 +1,11 @@
 use std::{fs, path::PathBuf};
 
-use crate::filters::is_file_interesting;
+use crate::{filters::is_file_interesting, read_config::AppConfig};
 
-pub fn read_dir_recursive(path: PathBuf, result: &mut Vec<String>, ext: Option<&str>) {
-    let Ok(entries) = fs::read_dir(path) else { return };
+pub fn read_dir_recursive(path: PathBuf, ext: Option<&str>, app_config: &AppConfig) -> Vec<String> {
+    let mut result: Vec<String> = vec![];
+
+    let Ok(entries) = fs::read_dir(path) else { return result };
 
     for entry in entries {
         if let Ok(entry) = entry {
@@ -12,7 +14,7 @@ pub fn read_dir_recursive(path: PathBuf, result: &mut Vec<String>, ext: Option<&
 
             match path.is_dir() {
                 false => {
-                    if !is_file_interesting(&path, ext) {
+                    if !is_file_interesting(&path, ext, app_config) {
                         continue;
                     }
                     // Process the file
@@ -20,9 +22,10 @@ pub fn read_dir_recursive(path: PathBuf, result: &mut Vec<String>, ext: Option<&
                     result.push(file_name);
                 }
                 true => {
-                    read_dir_recursive(path, result, ext);
+                    read_dir_recursive(path, ext, app_config);
                 }
             }
         }
     }
+    result
 }

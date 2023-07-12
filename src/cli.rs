@@ -1,6 +1,6 @@
 use std::env::args_os;
 
-use crate::read_dir::read_dir_recursive;
+use crate::{read_config::AppConfig, read_dir::read_dir_recursive};
 
 pub fn get_arg(index: usize) -> Option<String> {
     args_os()
@@ -20,19 +20,17 @@ fn print_usage(program_name: &str) {
     println!("    <input>  File extension, e.g., config, yaml");
 }
 
-pub fn check_cli_context() -> Option<()> {
-    let mut files = vec![];
-
+pub fn check_cli_context(app_config: &AppConfig) -> Option<()> {
     match get_arg(1) {
         Some(a) => {
             match a.as_str() {
                 "find" => {
                     let ext = get_arg(2);
-                    read_dir_recursive(
+                    let files = read_dir_recursive(
                         dirs::config_dir().unwrap_or_default(),
-                        &mut files,
                         ext.as_deref(),
-                    )
+                        app_config,
+                    );
                 }
                 "help" => print_usage("consync"),
                 other_value => {

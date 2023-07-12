@@ -6,6 +6,7 @@ echo "'${BIN_NAME}' removed from ~/bin/"
 
 rm ~/bin/$BIN_NAME
 rm ~/bin/${BIN_NAME}_uninstall
+rm ~/.config/$BIN_NAME
 
 systemctl --user disable consync.service
 systemctl --user stop consync.service

@@ -20,6 +20,7 @@ EOF
 
 clean() {
     rm -rf -- $BIN_NAME
+    rm -rf ~/.config/$BIN_NAME
 }
 create_systemd_service() {
     echo "Creating systemd service..."
@@ -112,6 +113,7 @@ install_binary() {
     echo "Installing '${BIN_NAME}'..."
 
     install -d ~/bin/
+    mkdir -p ~/.config/$BIN_NAME
     install -- $EXECUTABLE ~/bin/$BIN_NAME
     install -- $UNINSTALL_EXECUTABLE ~/bin/${BIN_NAME}_uninstall
 
