@@ -20,7 +20,6 @@ EOF
 
 clean() {
     rm -rf -- $BIN_NAME
-    rm -rf ~/.config/$BIN_NAME
 }
 create_systemd_service() {
     echo "Creating systemd service..."
