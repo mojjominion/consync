@@ -25,7 +25,7 @@ fn chezmoi(path: &PathBuf, arg: ChezmoiArgs) {
         .output();
 
     match chezmoi {
-        Ok(_) => println!("Done.."),
+        Ok(_) => println!("Done.. {} added to chezmoi", file.to_string()),
         Err(err) => println!("Errored: {}", err),
     }
 }

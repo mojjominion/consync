@@ -13,6 +13,9 @@ pub fn cli_context(app_config: &AppConfig) -> Option<()> {
                         ext.as_deref(),
                         app_config,
                     );
+                    for pat in files {
+                        println!("{}", pat)
+                    }
                 }
                 "help" => print_usage("consync"),
                 other_value => {

@@ -22,11 +22,31 @@ impl Executor {
                     .output();
 
                 match output {
-                    Ok(res) => println!("{:#?}", String::from_utf8(res.stdout)),
-                    Err(err) => println!("Errored: {:#?}", err),
+                    Ok(res) => {
+                        // println!("{:?}", self.kind);
+                        pretty_print_output(&res.stdout);
+                    }
+                    Err(err) => pretty_print_output(err.to_string().as_bytes()),
                 }
             }
             _ => chezmoi::run_chezmoi(&PathBuf::from(self.file_name), self.kind),
+        }
+    }
+}
+
+fn pretty_print_output(bytes: &[u8]) {
+    let output_str = String::from_utf8_lossy(bytes);
+
+    for line in output_str.lines() {
+        if line.contains("error") {
+            // Print error messages in red
+            println!("\x1b[91m{}\x1b[0m", line);
+        } else if line.contains("warning") {
+            // Print warning messages in yellow
+            println!("\x1b[93m{}\x1b[0m", line);
+        } else {
+            // Print other lines in the default color
+            println!("{}", line);
         }
     }
 }
