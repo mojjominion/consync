@@ -28,6 +28,7 @@ Simple tool to auto add configuration files (`.conf, .config, .conf`) to the you
     /// renaming) the original then creating a new file in-place.
   - Remove(RemoveKind),
 ```
+
 [source](https://docs.rs/notify/latest/notify/event/enum.EventKind.html)
 
 ## Usage
@@ -36,13 +37,11 @@ Simple tool to auto add configuration files (`.conf, .config, .conf`) to the you
 
 You can run this bash script to install the tool
 
-
 ```sh
 curl -L https://raw.githubusercontent.com/mojjominion/consync/master/scripts/install.sh | bash
 ```
 
 > **_Note:_**   this script will create a systemd service for the current user which will run in the background
-
 
 This script will do following three things:
 
@@ -50,7 +49,7 @@ This script will do following three things:
 2. create `systemd` service to keep the tool running in the background
 3. and finally install `consync_uninstall` to uninstall the tool
 
-To check that sevice is running you can use this command 
+To check that sevice is running you can use this command
 
 ```sh
 ps -eo 'tty,pid,comm' | grep "consync"
@@ -58,17 +57,14 @@ ps -eo 'tty,pid,comm' | grep "consync"
 
 For more information refer to the script [here](./scripts/install.sh)
 
-
 ### Cli
 
 - `consync find` find all the files matching default [extentions](./src/config.rs) in `~/.config/` dir.
 - `consync find <file_ext>` find all the files matching `file_ext` input ignoring all the default ones.
 
-
 ### Uninstalling
 
 To undo whatever the installation script did in the system you can run this bash script
-
 
 ```sh
 consync_uninstall
@@ -76,9 +72,24 @@ consync_uninstall
 
  > This script will remove the systemd service created for the current user.
 
-
-
 ## Support
 
 At the moment this tool only supports [chezmoi](https://github.com/twpayne/chezmoi) config manager. In future it might have some configuration to run custom scripts on those events
 
+- **Config**
+
+```yml
+root: $HOME/.config
+run: <custom command> | null
+file_types:
+- conf
+- config
+- confg
+- yml
+- yaml
+- service
+```
+
+  **`root`** is the directory that needs to be tracked for file changes
+
+  **`run`** will be executed for every file that is in `file_types` if it changes
