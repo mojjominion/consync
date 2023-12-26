@@ -18,7 +18,7 @@ pub struct AppConfig {
     pub run: Option<String>,
 
     /// Defaults::
-    /// "conf", "config", "confg", "yml", "yaml", "service"
+    /// "conf", "config", "confg", "yml", "yaml", "service" or any patterns
     pub file_types: Option<Vec<String>>,
 }
 
@@ -58,11 +58,13 @@ pub fn load_config() -> Result<AppConfig, Box<dyn std::error::Error>> {
                 .iter()
                 .map(|x| x.to_string())
                 .collect();
+
             let new_config = AppConfig {
                 root,
                 run: None,
                 file_types: Some(types),
             };
+
             let res = write_config_file(config_path.as_path(), &new_config)?;
             println!("Created new configuration: {:#?}", new_config);
             println!("{res:#?}");
