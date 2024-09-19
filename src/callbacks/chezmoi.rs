@@ -1,22 +1,23 @@
-use std::{io::ErrorKind, ops::Not, path::PathBuf, process::Command};
+use std::fmt::Formatter;
+use std::{fmt::Display, io::ErrorKind, ops::Not, path::Path, process::Command};
 
 use notify::EventKind;
 
-pub fn run_chezmoi(path: &PathBuf, kind: EventKind) {
+pub fn run_chezmoi(path: &Path, kind: EventKind) {
     if is_chezmoi().not() {
         return;
     }
     match kind {
-        EventKind::Create(_) => chezmoi(path, ChezmoiArgs::ADD),
-        EventKind::Modify(_) => chezmoi(path, ChezmoiArgs::ADD),
-        EventKind::Remove(_) => chezmoi(path, ChezmoiArgs::REMOVE),
+        EventKind::Create(_) => chezmoi(path, ChezmoiArgs::Add),
+        EventKind::Modify(_) => chezmoi(path, ChezmoiArgs::Add),
+        EventKind::Remove(_) => chezmoi(path, ChezmoiArgs::Remove),
         _ => {}
     }
 }
 
-fn chezmoi(path: &PathBuf, arg: ChezmoiArgs) {
+fn chezmoi(path: &Path, arg: ChezmoiArgs) {
     let file = path.to_string_lossy();
-    println!("Executing `chezmoi {}` for {}", arg.to_string(), file);
+    println!("Executing `chezmoi {}` for {}", arg, file);
 
     let chezmoi = Command::new("chezmoi")
         .arg(arg.to_string())
@@ -25,25 +26,26 @@ fn chezmoi(path: &PathBuf, arg: ChezmoiArgs) {
         .output();
 
     match chezmoi {
-        Ok(_) => println!("Done.. {} added to chezmoi", file.to_string()),
+        Ok(_) => println!("Done.. {} added to chezmoi", file),
         Err(err) => println!("Errored: {}", err),
     }
 }
 
 #[allow(dead_code)]
 enum ChezmoiArgs {
-    ADD,
-    READD,
-    REMOVE,
+    Add,
+    Readd,
+    Remove,
 }
-impl ToString for ChezmoiArgs {
-    fn to_string(&self) -> String {
+
+impl Display for ChezmoiArgs {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         let str = match self {
-            ChezmoiArgs::ADD => "add",
-            ChezmoiArgs::READD => "re-add",
-            ChezmoiArgs::REMOVE => "remove",
+            ChezmoiArgs::Add => "add",
+            ChezmoiArgs::Readd => "re-add",
+            ChezmoiArgs::Remove => "remove",
         };
-        str.to_string()
+        write!(f, "{}", str)
     }
 }
 

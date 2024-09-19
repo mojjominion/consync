@@ -41,12 +41,12 @@ pub async fn async_watch(app_config: &AppConfig) -> Result<()> {
     // Add a path to be watched. All files and directories at that path and
     // below will be monitored for changes.
     let path = Path::new(app_config.root.as_str());
-    watcher.watch(&path, RecursiveMode::Recursive)?;
+    watcher.watch(path, RecursiveMode::Recursive)?;
 
     while let Some(res) = rx.next().await {
         match res {
             Ok(event) => {
-                if let Some(file_name) = event.paths.get(0) {
+                if let Some(file_name) = event.paths.first() {
                     let executor = Executor {
                         app_config: app_config.clone(),
                         file_name: file_name.to_string_lossy().to_string(),

@@ -17,8 +17,8 @@ impl Executor {
     pub fn run(self) {
         match self.app_config.run {
             Some(global_cmd) => {
-                let output = Command::new(global_cmd.to_string())
-                    .arg(self.file_name.to_string())
+                let output = Command::new(&global_cmd)
+                    .arg(&self.file_name)
                     .output();
 
                 match output {

@@ -1,4 +1,4 @@
-use std::{collections::HashSet, path::PathBuf, vec};
+use std::{collections::HashSet, path::Path};
 
 use notify::EventKind;
 
@@ -14,7 +14,7 @@ fn wild_prefix(str: &str) -> Option<&str> {
 }
 
 pub fn is_file_interesting(
-    file_path: &PathBuf,
+    file_path: &Path,
     cli_explicit_ext: Option<&str>,
     app_config: &AppConfig,
 ) -> bool {

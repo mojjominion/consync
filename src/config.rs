@@ -31,7 +31,7 @@ fn read_config_file(path: &Path) -> Result<AppConfig, Box<dyn std::error::Error>
 }
 
 fn write_config_file(path: &Path, config: &AppConfig) -> Result<(), Box<dyn std::error::Error>> {
-    let mut file = OpenOptions::new().write(true).create(true).open(path)?;
+    let mut file = OpenOptions::new().write(true).truncate(true).create(true).open(path)?;
     let json_config = serde_yaml::to_string(config)?;
     file.write_all(json_config.as_bytes())?;
     file.sync_all()?;
@@ -54,7 +54,7 @@ pub fn load_config() -> Result<AppConfig, Box<dyn std::error::Error>> {
             config
         }
         Err(_) => {
-            let types = vec!["conf", "config", "confg", "yml", "yaml", "service"]
+            let types = ["conf", "config", "confg", "yml", "yaml", "service"]
                 .iter()
                 .map(|x| x.to_string())
                 .collect();
@@ -65,9 +65,8 @@ pub fn load_config() -> Result<AppConfig, Box<dyn std::error::Error>> {
                 file_types: Some(types),
             };
 
-            let res = write_config_file(config_path.as_path(), &new_config)?;
+            write_config_file(config_path.as_path(), &new_config)?;
             println!("Created new configuration: {:#?}", new_config);
-            println!("{res:#?}");
             new_config
         }
     };
